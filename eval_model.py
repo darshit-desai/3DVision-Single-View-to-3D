@@ -346,11 +346,10 @@ def evaluate_model(args):
                 render_points(gt_points, output_path=f'Results/Q2_2_{num_imgs}_gt_{args.type}.gif', type_data="gt")
             elif args.type == "mesh":
                 render_mesh(predictions, args, output_file=f'Results/Q2_3_{num_imgs}_{args.type}.gif')
-                render_mesh(mesh_gt, args, output_file=f'Results/Q2_3_{num_imgs}_gt_{args.type}.gif')
-        #     # visualization block
-        #     #  rend = 
-        #     plt.imsave(f'vis/{step}_{args.type}.png', rend)
+                render_mesh(mesh_gt, args, output_file=f'Results/Q2_3_{num_imgs}_gt_{args.type}.gif')    
+            plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
         if(step == max_iter-1 ):
+            plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
             if args.type == "vox":
                 render_voxels(predictions, output_path=f'Results/Q2_1_final_{args.type}.gif')
                 voxel_ground_truth = feed_dict['voxels'].to(args.device)

@@ -1,0 +1,230 @@
+                    <meta charset="utf-8" emacsmode="-*- markdown -*">
+                            **CMSC848F-3D Vision**
+                                **Project 1**
+                            **Darshit Desai**
+                            **Dir id: darshit; Email: darshit@umd.edu**                           
+Setup 
+===============================================================================
+Rendering your first mesh (5 points)
+-------------------------------------------------------------------------------
+On your webpage, include an image of your first mesh.
+<!---add the image of my first mesh from images/cow_render.jpg using html md style from the root folder-->
+ 
+![Rendering the first mesh](assets/cow_render.jpg)
+
+Practicing with Cameras
+===============================================================================
+360-degree Renders (5 points)
+-------------------------------------------------------------------------------
+On your webpage, you should include a gif that shows the cow mesh from many continously changing viewpoints.
+<!---add the image of my first mesh from images/360render_cow.jpg using html md style from the root folder-->
+
+<figure style="text-align: center;">
+    <img src="assets/360render_cow.gif" alt="360 degree render of the cow mesh" />
+    <figcaption>360 degree render of the cow mesh</figcaption>
+</figure>
+
+Recreating the Dolly Zoom (15 points)
+-------------------------------------------------------------------------------
+The [Dolly Zoom](https://en.wikipedia.org/wiki/Dolly_zoom) is a famous camera effect,
+first used in the Alfred Hitchcock film
+[Vertigo](https://www.youtube.com/watch?v=G7YJkBcRWB8).
+The core idea is to change the focal length of the camera while moving the camera in a
+way such that the subject is the same size in the frame, producing a rather unsettling
+effect.
+
+**On your webpage, include a gif with your dolly zoom effect.**
+
+<figure style="text-align: center;">
+    <img src="assets/dolly.gif" alt="Dolly Zoom" />
+    <figcaption>Dolly Zoom effect on the cow mesh</figcaption>
+</figure>
+
+Practicing with Meshes 
+===============================================================================
+
+Constructing a Tetrahedron (5 points)
+-------------------------------------------------------------------------------
+In this part, you will practice working with the geometry of 3D meshes.
+Construct a [tetrahedron mesh](https://en.wikipedia.org/wiki/Types_of_mesh#Tetrahedron) and then render it from multiple viewpoints. 
+Your tetrahedron does not need to be a regular
+tetrahedron (i.e. not all faces need to be equilateral triangles) as long as it is
+obvious from the renderings that the shape is a tetrahedron.
+
+You will need to manually define the vertices and faces of the mesh. Once you have the
+vertices and faces, you can define a single-color texture, similarly to the cow in
+`render_mesh.py`. Remember that the faces are the vertex indices of the triangle mesh. 
+
+It may help to draw a picture of your tetrahedron and label the vertices and assign 3D
+coordinates.
+
+**On your webpage, show a 360-degree gif animation of your tetrahedron.
+Also, list how many vertices and (triangle) faces your mesh should have.**
+
+**Answer:** The tetrahedron has **4 vertices** and **4 faces**. Notice the triangles are equilateral.
+
+<figure style="text-align: center;">
+    <img src="assets/360render_tetrahedron.gif" alt="Tetrahedron" />
+    <figcaption>Tetrahedron mesh render and 360 degree gif</figcaption>
+</figure>
+
+Constructing a Cube (5 points)
+-------------------------------------------------------------------------------
+
+Construct a cube mesh and then render it from multiple viewpoints. Remember that we are
+still working with triangle meshes, so you will need to use two sets of triangle faces
+to represent one face of the cube.
+
+**On your webpage, show a 360-degree gif animation of your cube.
+Also, list how many vertices and (triangle) faces your mesh should have.**
+
+**Answer:** The cube has **8 vertices** and **12 faces**.
+
+<figure style="text-align: center;">
+    <img src="assets/cube_360.gif" alt="Cube" />
+    <figcaption>Cube mesh render and 360 degree gif</figcaption>
+</figure>
+
+Re-texturing a mesh (15 points)
+===============================================================================
+
+Now let's practice re-texturing a mesh. For this task, we will be retexturing the cow
+mesh such that the color smoothly changes from the front of the cow to the back of the
+cow.
+
+**In your submission, describe your choice of `color1` and `color2`, and include a gif of the
+rendered mesh.**
+
+**Answer:** I chose `color1` to be `Navy-blue (0,0,0.5)#000080` and `color2` to be `Yellow (1.0,1.0,0)#FFFF00`. The gif of the rendered mesh is shown below.
+
+<figure style="text-align: center;">
+    <img src="assets/retexture_360render.gif" alt="Cow Color" />
+    <figcaption>Re-textured cow 360-degree rendering gif</figcaption>
+</figure>
+
+Camera Transformations (15 points)
+===============================================================================
+When working with 3D, finding a reasonable camera pose is often the first step to
+producing a useful visualization, and an important first step toward debugging.
+
+Running `python -m starter.camera_transforms` produces the following image using
+the camera extrinsics rotation `R_0` and translation `T_0`:
+
+![](assets/transform_none.jpg)
+
+
+What are the relative camera transformations that would produce each of the following
+output images? You should find a set (R_relative, T_relative) such that the new camera
+extrinsics with `R = R_relative @ R_0` and `T = R_relative @ T_0 + T_relative` produces
+each of the following images:
+
+![](assets/transform1.jpg) &nbsp; ![](assets/transform2.jpg) &nbsp; ![](assets/transform3.jpg)
+![](assets/transform4.jpg)
+
+**In your report, describe in words what R_relative and T_relative should be doing
+and include the rendering produced by your choice of R_relative and T_relative.**
+
+**Answer:** The camera transformations are done using `pytorch3d.renderer.FoVPerspectiveCameras`. The R<sub>relative</sub> and T<sub>relative</sub> are used to define the camera extrinsics using the following formulas:
+
+R<sub>camera</sub> = R<sub>relative</sub> @ R<sub>0</sub>
+
+T<sub>camera</sub> = R<sub>relative</sub> @ T<sub>0</sub> + T<sub>relative</sub>
+
+Where Rotation about x, y, z axis is defined as follows:
+
+R<sub>x</sub> = \(\begin{bmatrix} 1 & 0 & 0 \\ 0 & cos(\theta) & -sin(\theta) \\ 0 & sin(\theta) & cos(\theta) \end{bmatrix}\)
+
+R<sub>y</sub> = \(\begin{bmatrix} cos(\theta) & 0 & sin(\theta) \\ 0 & 1 & 0 \\ -sin(\theta) & 0 & cos(\theta) \end{bmatrix}\)
+
+R<sub>z</sub> = \(\begin{bmatrix} cos(\theta) & -sin(\theta) & 0 \\ sin(\theta) & cos(\theta) & 0 \\ 0 & 0 & 1 \end{bmatrix}\)
+
+The relative camera transformations that would produce each of the above output images are as follows:
+
+| Image | R_relative | T_relative | Description |
+| --- | --- | --- | --- |
+| <div style="background-color: black; padding: 2px;"><img src="assets/transform_cow1.jpg" style="max-width: 100%;"></div> | \(\begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}\) | \(\begin{bmatrix}0 \\ 0 \\ 0\end{bmatrix}\) | Here the camera is <br> rotated 90 degrees about <br> the z-axis. |
+| <div style="background-color: black; padding: 2px;"><img src="assets/transform_cow2.jpg" style="max-width: 100%;"></div> | \(\begin{bmatrix} 0 & 0 & -1 \\ 0 & 1 & 0 \\ 1 & 0 & 0 \end{bmatrix}\) | \(\begin{bmatrix}3.0 \\ 0.0 \\ 3.0\end{bmatrix}\) | Here the camera is <br> rotated 90 degrees about the <br> y-axis and  translated by <br> 3 units along the x and z axis. |
+| <div style="background-color: black; padding: 2px;"><img src="assets/transform_cow3.jpg" style="max-width: 100%;"></div> | \(\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}\) | \(\begin{bmatrix}0.0 \\ 0.0 \\ 6.0\end{bmatrix}\) | Here the camera is <br> translated backwards <br> by 6 units along the <br> z-axis. |
+| <div style="background-color: black; padding: 2px;"><img src="assets/transform_cow4.jpg" style="max-width: 100%;"></div> | \(\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}\) | \(\begin{bmatrix}0.25 \\ -0.25 \\ -0.5\end{bmatrix}\) | Here the camera seems <br> to be translated along <br> all 3 axis: <br>(1)By 0.25 units along <br> the x axis; <br> (2) By -0.25 units along <br> the y axis; <br> & <br> By -0.5 units along <br> the z axis. |
+
+Parametric Functions (10 points)
+===============================================================================
+Rendering Point Clouds from RGB-D Images (15 points)
+-------------------------------------------------------------------------------
+In this part, we will practice rendering point clouds constructed from 2 RGB-D images
+from the [Common Objects in 3D Dataset](https://github.com/facebookresearch/co3d).
+
+![](assets/plant.jpg)
+
+You should use the `unproject_depth_image` function in `utils.py` to convert a depth
+image into a point cloud (parameterized as a set of 3D coordinates and corresponding
+color values). The `unproject_depth_image` function uses the camera
+intrinsics and extrinisics to cast a ray from every pixel in the image into world 
+coordinates space. The ray's final distance is the depth value at that pixel, and the
+color of each point can be determined from the corresponding image pixel.
+
+Construct 3 different point clouds:
+1. The point cloud corresponding to the first image
+2. The point cloud corresponding to the second image
+3. The point cloud formed by the union of the first 2 point clouds.
+
+Try visualizing each of the point clouds from various camera viewpoints. We suggest
+starting with cameras initialized 6 units from the origin with equally spaced azimuth
+values.
+
+**In your submission, include a gif of each of these point clouds side-by-side.**
+
+**Answer:** The gif of the point clouds is shown below.
+
+<figure style="text-align: center;">
+    <img src="assets/PC1_360render.gif" alt="Point Cloud of first image" />
+    <figcaption>360 Render of the first image's point cloud</figcaption>
+</figure>
+<figure style="text-align: center;">
+    <img src="assets/PC2_360render.gif" alt="Point Cloud of first image" />
+    <figcaption>360 Render of the second image's point cloud</figcaption>
+</figure>
+<figure style="text-align: center;">
+    <img src="assets/PCUnion_360render.gif" alt="Point Cloud of first image" />
+    <figcaption>360 Render of the union of the first two point clouds</figcaption>
+</figure>
+
+Parametric Functions (10 points)
+-------------------------------------------------------------------------------
+**In your writeup, include a 360-degree gif of your torus point cloud, and make sure
+the hole is visible. You may choose to texture your point cloud however you wish.**
+
+**Answer:** The gif of the torus point cloud is shown below.
+
+<figure style="text-align: center;">
+    <img src="assets/toroid_parametric_360render.gif" alt="Torus Point Cloud" />
+    <figcaption>360 Render of the torus point cloud</figcaption>
+</figure>
+
+Implicit Surfaces (10 points)
+-------------------------------------------------------------------------------
+**In your writeup, include a 360-degree gif of your torus mesh, and make sure the hole
+is visible. In addition, discuss some of the tradeoffs between rendering as a mesh
+vs a point cloud. Things to consider might include rendering speed, rendering quality,
+ease of use, memory usage, etc.**
+
+**Answer:**
+
+**Part 1:**
+The gif of the torus mesh using Implicit Surfaces is shown below.
+
+<figure style="text-align: center;">
+    <img src="assets/toroid_implicit_360render.gif" alt="Torus Mesh" />
+    <figcaption>360 Render of the torus mesh using Implicit Surfaces</figcaption>
+</figure>
+
+**Part 2:**
+The tradeoffs between rendering as a mesh vs a point cloud are as follows:
+
+Generating a point cloud with parametric functions gives several advantages. One advantage is the ease with which point clouds can be generated by simply sampling the functions in a given limit. In our case it was from 0 to 2π. During the point generation stage, memory usage is linear (O(n)), as it depends on the number of points to be stored. The quality is tied to the number of points being sampled and can be adjusted by increasing the number of points from 100 to a 1000. In my case I used 300 points. But this is a sparse representation as compared to others like meshes.
+
+While, In case of rendering surface mesh from implicit functions or i.e., signed distance functions involves constructing a voxel grid which as the name suggests would occupy cubic memory or (O(n^3)) space. The process then employs marching cubes algorithm that matches cubes to find points on the surface wherever the distance function approaches zero. The computations for all these combined is also of cubic complexity which is larger then the parametric approach. The quality of the mesh is also dependent on the resolution of the voxel grid. The higher the resolution, the better the quality of the mesh. The mesh is also a dense representation as compared to the point cloud.
+
+
+
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js?" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

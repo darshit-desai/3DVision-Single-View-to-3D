@@ -181,7 +181,44 @@ def smoothness_loss(mesh_src):
 	loss_laplacian = mesh_laplacian_smoothing(mesh_src, method="uniform")
 	return loss_laplacian
 ```
-
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;" colspan="2">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Mesh\mesh_fitdatagt99999.gif" alt="Ground truth Mesh" />
+        <figcaption>Ground truth Mesh</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Mesh\mesh_fitdata0.gif" alt="Mesh status at 0 iterations" />
+        <figcaption>Mesh status at 0 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Mesh\mesh_fitdata500.gif" alt="Mesh status at 500 iterations" />
+        <figcaption>Mesh render status at 500 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Mesh\mesh_fitdata5000.gif" alt="Mesh status at 5000 iterations" />
+        <figcaption>Mesh status at 5,000 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Mesh\mesh_fitdata99999.gif" alt="Point Cloud status at 100000 iterations" />
+        <figcaption>Mesh status at 100,000 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
 
 Practicing with Meshes 
 ===============================================================================

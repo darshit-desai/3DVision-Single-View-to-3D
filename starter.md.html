@@ -1,44 +1,187 @@
                     <meta charset="utf-8" emacsmode="-*- markdown -*">
                             **CMSC848F-3D Vision**
-                                **Project 1**
+                                **Project 2**
                             **Darshit Desai**
                             **Dir id: darshit; Email: darshit@umd.edu**                           
-Setup 
+Exploring loss functions (15 points)
 ===============================================================================
-Rendering your first mesh (5 points)
+This section will involve defining a loss function, for fitting voxels, point clouds and meshes.
+
+Fitting a voxel grid (5 points)
 -------------------------------------------------------------------------------
-On your webpage, include an image of your first mesh.
+In this subsection, we will define binary cross entropy loss that can help us <b>fit a 3D binary voxel grid</b>.
+Define the loss functions [here](https://github.com/848f-3DVision/assignment2/blob/main/losses.py#L4-L9) in `losses.py` file. 
+For this you can use the pre-defined losses in pytorch library.
+
+Run the file `python fit_data.py --type 'vox'`, to fit the source voxel grid to the target voxel grid. 
+
+**Visualize the optimized voxel grid along-side the ground truth voxel grid using the tools learnt in previous section.**
 <!---add the image of my first mesh from images/cow_render.jpg using html md style from the root folder-->
  
-![Rendering the first mesh](assets/cow_render.jpg)
+**Answer-** For this I used the Binary Cross Entropy Loss function and applied Sigmoid on top of it to clamp probability values between 0.0 and 1.0. The relevant torch function for that is mentioned below:
 
-Practicing with Cameras
-===============================================================================
-360-degree Renders (5 points)
+```python
+def voxel_loss(voxel_src,voxel_tgt):
+	# voxel_src: b x h x w x d
+	# voxel_tgt: b x h x w x d
+    # implement some loss for binary voxel grids
+	bceloss = torch.nn.BCEWithLogitsLoss()
+	loss = bceloss(voxel_src, voxel_tgt)
+	return loss
+```
+The various stages of the data fitting at different iteration numbers are shown below:
+
+
+<style>
+  table {
+    width: 100%;
+    text-align: center;
+  }
+  td {
+    width: 100%;
+    padding: 1px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Prevents the border from affecting layout */
+  }
+  figure {
+    margin: 0; /* Remove default margins around figures */
+  }
+  img {
+    width: 75%; /* Make the images fill their container */
+  }
+</style>
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;" colspan="2">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Voxels/voxel_fitdatagt99999.gif" alt="Ground truth Voxels" />
+        <figcaption>Ground truth Voxels</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Voxels/voxel_fitdata0.gif" alt="Voxel status at 0 iterations" />
+        <figcaption>Voxel render status at 0 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Voxels/voxel_fitdata1000.gif" alt="Voxel status at 1000 iterations" />
+        <figcaption>Voxel status at 1,000 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Voxels/voxel_fitdata5000.gif" alt="Voxel status at 5000 iterations" />
+        <figcaption>Voxel status at 5,000 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Voxels/voxel_fitdata99999.gif" alt="Voxel status at 100000 iterations" />
+        <figcaption>Voxel status at 100,000 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+
+
+
+Fitting a point cloud (5 points)
 -------------------------------------------------------------------------------
-On your webpage, you should include a gif that shows the cow mesh from many continously changing viewpoints.
-<!---add the image of my first mesh from images/360render_cow.jpg using html md style from the root folder-->
 
-<figure style="text-align: center;">
-    <img src="assets/360render_cow.gif" alt="360 degree render of the cow mesh" />
-    <figcaption>360 degree render of the cow mesh</figcaption>
-</figure>
+In this subsection, we will define chamfer loss that can help us <b> fit a 3D point cloud </b>.
+Define the loss functions [here](https://github.com/848f-3DVision/assignment2/blob/main/losses.py#L11-L15) in `losses.py` file.
+<b>We expect you to write your own code for this and not use any pytorch3d utilities. You are allowed to use functions inside pytorch3d.ops.knn such as knn_gather or knn_points</b>
 
-Recreating the Dolly Zoom (15 points)
+Run the file `python fit_data.py --type 'point'`, to fit the source point cloud to the target point cloud. 
+
+**Visualize the optimized point cloud along-side the ground truth point cloud using the tools learnt in previous section.**360-degree Renders (5 points)
+
+**Answer-** For this as mentioned in the question I wrote a function for defining chamfer loss, I took some help from the pytorch3d documentation as it had the source code of the pytorch3d function, The function that I wrote for the chamfer loss is mentioned below:
+```python
+def chamfer_loss(point_cloud_src, point_cloud_tgt):
+    # point_cloud_src, point_cloud_src: b x n_points x 3  
+    # implement chamfer loss from scratch
+    # Verify input shapes
+    assert point_cloud_src.shape[2] == 3, "Input point_cloud_src must have shape B x N x 3"
+    assert point_cloud_tgt.shape[2] == 3, "Input point_cloud_tgt must have shape B x N x 3"
+    # Calculate nearest neighbors using PyTorch3D's knn_points
+    source2target_knn = pytorch3d.ops.knn_points(point_cloud_src, point_cloud_tgt, K=1, norm=2)
+    target2source_knn = pytorch3d.ops.knn_points(point_cloud_tgt, point_cloud_src, K=1, norm=2)
+    # Calculate chamfer loss
+    source2target_dist = source2target_knn.dists[..., 0]  # (B, N)
+    target2source_dist = target2source_knn.dists[..., 0]  # (B, M)
+    loss_chamfer = source2target_dist.mean() + target2source_dist.mean()
+    return loss_chamfer
+```
+The various stages of the data fitting at different iteration numbers are shown below:
+
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;" colspan="2">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Pointcloud\pointcloud_fitdatagt99999.gif" alt="Ground truth point cloud" />
+        <figcaption>Ground truth point cloud</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Pointcloud\pointcloud_fitdata0.gif" alt="Point Cloud status at 0 iterations" />
+        <figcaption>Point cloud render status at 0 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Pointcloud\pointcloud_fitdata5000.gif" alt="Point Cloud status at 5000 iterations" />
+        <figcaption>Point Cloud status at 5,000 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1\Pointcloud\pointcloud_fitdata10000.gif" alt="Point Cloud status at 10000 iterations" />
+        <figcaption>Point Cloud status at 10,000 iterations</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_problem1/Pointcloud/pointcloud_fitdata99999.gif" alt="Point Cloud status at 100000 iterations" />
+        <figcaption>Point Cloud status at 100,000 iterations</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+Fitting a mesh (5 points)
 -------------------------------------------------------------------------------
-The [Dolly Zoom](https://en.wikipedia.org/wiki/Dolly_zoom) is a famous camera effect,
-first used in the Alfred Hitchcock film
-[Vertigo](https://www.youtube.com/watch?v=G7YJkBcRWB8).
-The core idea is to change the focal length of the camera while moving the camera in a
-way such that the subject is the same size in the frame, producing a rather unsettling
-effect.
 
-**On your webpage, include a gif with your dolly zoom effect.**
+In this subsection, we will define an additional smoothening loss that can help us <b> fit a mesh</b>.
+Define the loss functions [here](https://github.com/848f-3DVision/assignment2/blob/main/losses.py#L17-L20) in `losses.py` file.
 
-<figure style="text-align: center;">
-    <img src="assets/dolly.gif" alt="Dolly Zoom" />
-    <figcaption>Dolly Zoom effect on the cow mesh</figcaption>
-</figure>
+For this you can use the pre-defined losses in pytorch library.
+
+Run the file `python fit_data.py --type 'mesh'`, to fit the source mesh to the target mesh. 
+
+**Visualize the optimized mesh along-side the ground truth mesh using the tools learnt in previous section.**
+
+**Answer-** 
+For this I used the inbuilt pytorch3d function `pytorch3d.loss.mesh_laplacian_smoothing`, The following is the function definition as mentioned in the code:
+```python
+def smoothness_loss(mesh_src):
+	# implement laplacian smoothening loss
+	loss_laplacian = mesh_laplacian_smoothing(mesh_src, method="uniform")
+	return loss_laplacian
+```
+
 
 Practicing with Meshes 
 ===============================================================================

@@ -6,13 +6,9 @@ from pytorch3d.loss import mesh_laplacian_smoothing
 def voxel_loss(voxel_src,voxel_tgt):
 	# voxel_src: b x h x w x d
 	# voxel_tgt: b x h x w x d
-	# voxel_src_clamping = torch.clamp(voxel_src, 0.0, 1.0)
-	# voxel_tgt_clamping = torch.clamp(voxel_tgt, 0.0, 1.0)
-	# print("Voxel src shape", voxel_src.shape)
-	# print("Voxel target shape", voxel_tgt.shape)
+	# implement some loss for binary voxel grids
 	bceloss = torch.nn.BCEWithLogitsLoss()
 	loss = bceloss(voxel_src, voxel_tgt)
-	# implement some loss for binary voxel grids
 	return loss
 
 def chamfer_loss(point_cloud_src,point_cloud_tgt):

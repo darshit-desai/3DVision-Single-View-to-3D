@@ -32,6 +32,8 @@ def get_args_parser():
     parser.add_argument('--load_checkpoint', action='store_true')  
     parser.add_argument('--device', default='cuda', type=str) 
     parser.add_argument('--load_feat', action='store_true') 
+    if parser.parse_known_args()[0].type == 'vox':
+        parser.add_argument('--model_type') 
     return parser
 
 def preprocess(feed_dict, args):

@@ -33,6 +33,8 @@ This readme is for replicating the results primarily shown in Problem 1.1-1.3 ab
     #"Usage: $0 [train_baseline|train_smooth_5]"
     ./problem2_mesh.sh train_baseline
 
+Note for every model you train the checkpoints are saved as defaults `checkpoint_vox|point|mesh.pth` so if you train a hyperparameter model, then you might be overwritting the same files.
+
 
 ## How can you locate the models along with the results?
 

@@ -849,5 +849,94 @@ Interpret your model (10 points)
 Simply seeing final predictions and numerical evaluations is not always insightful. Can you create some visualizations that help highlight what your learned model does? Be creative and think of what visualizations would help you gain insights. There is no `right' answer - although reading some papers to get inspiration might give you ideas.
 
 **Answer-**
+In this section I wanted to check the generalization capability with the edge cases to further check whether the model is generalizing over chair objects or is it taking into account the background of the image as well, just to ensure whether the model is cheating or not, I used the following images for the same:
 
+* White Image Results:
+  <table style="width: 180%; text-align: center;">
+    <tr>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\white_image.png" alt="White Input Image to the Network" />
+          <figcaption>White Input Image to the Network</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_voxel_white.gif" alt="Rendered Voxel Prediction Representation for white image" />
+          <figcaption>Rendered Voxel Prediction Representation for white image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_pcl_white.gif" alt="Rendered Point Cloud Prediction Representation for white image" />
+          <figcaption>Rendered Point Cloud Prediction Representation for white image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_mesh_white.gif" alt="Rendered Mesh Prediction Representation for white image" />
+          <figcaption>Rendered Mesh Prediction Representation for white image</figcaption>
+        </figure>
+      </td>
+  </table>
+* Black Image Results:
+  <table style="width: 180%; text-align: center;">
+    <tr>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\black_image.png" alt="Black Input Image to the Network" />
+          <figcaption>Black Input Image to the Network</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_voxel_black.gif" alt="Rendered Voxel Prediction Representation for black image" />
+          <figcaption>Rendered Voxel Prediction Representation for black image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_pcl_black.gif" alt="Rendered Point Cloud Prediction Representation for black image" />
+          <figcaption>Rendered Point Cloud Prediction Representation for black image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_mesh_black.gif" alt="Rendered Mesh Prediction Representation for black image" />
+          <figcaption>Rendered Mesh Prediction Representation for black image</figcaption>
+        </figure>
+      </td>
+  </table>
+  * Gaussian Image Results:
+  <table style="width: 180%; text-align: center;">
+    <tr>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\gaussian_image.png" alt="Gaussian Input Image to the Network" />
+          <figcaption>Gaussian Input Image to the Network</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_voxel_gaussian.gif" alt="Rendered Voxel Prediction Representation for gaussian image" />
+          <figcaption>Rendered Voxel Prediction Representation for gaussian image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_pcl_gaussian.gif" alt="Rendered Point Cloud Prediction Representation for gaussian image" />
+          <figcaption>Rendered Point Cloud Prediction Representation for gaussian image</figcaption>
+        </figure>
+      </td>
+      <td style="width: 25%;">
+        <figure style="display: inline-block; width: 100%;">
+          <img src="Results_Problem2.6\Interpret_mesh_gaussian.gif" alt="Rendered Mesh Prediction Representation for gaussian image" />
+          <figcaption>Rendered Mesh Prediction Representation for gaussian image</figcaption>
+        </figure>
+      </td>
+  </table>
+
+From the above results it can be fairly assumed that the network is clearly overfitting over the background for some cases of black images in point clouds, In case of white and gaussian image inputs, the output shows that the network is not able to distinguish between a white image without any chair and a gaussian noise image. This is a clear case of overfitting and it would be better to use a more complex representation of ground truth data while training to avoid this overfitting issue, Like chairs in various orientations and backgrounds and lighting conditions.
+
+Another test, which could be done on the above used r2n2_shapenet_dataset would dataset augmentation where you give the chair images in various orientations, check the output of the forward pass done on the current model and if it doesn't match the ground truth  (and most probably it will not) include those rotated images in the dataset.
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js?" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

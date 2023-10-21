@@ -300,6 +300,19 @@ def evaluate_model(args):
 
     # Create a white image
     white_image = Image.new('RGB', (224, 224), (255, 255, 255))
+    # Create a black image
+    black_image = Image.new('RGB', (224, 224), (0, 0, 0))
+    # Create a gaussian noise image
+    # Define the size of the image
+    width = 224
+    height = 224
+
+    # Create a numpy array of random values with the same size as the image
+    noise = np.random.normal(loc=0.5, scale=0.1, size=(height, width, 3))
+
+    # Convert the numpy array to a PIL image
+    noise_image = Image.fromarray((noise * 255).astype(np.uint8))
+    
 
     # Define transformations to preprocess the image
     preprocess = transforms.Compose([
@@ -310,20 +323,28 @@ def evaluate_model(args):
     # Preprocess the white image
     white_image_tensor = preprocess(white_image)
     white_image_tensor = white_image_tensor.unsqueeze(0)  # Add batch dimension
-
+    # Preprocess the black image
+    black_image_tensor = preprocess(black_image)
+    black_image_tensor = black_image_tensor.unsqueeze(0)
+    # Preprocess the gaussian noise image
+    gaussian_image_tensor = preprocess(noise_image)
+    gaussian_image_tensor = gaussian_image_tensor.unsqueeze(0)
     # Ensure white_image_tensor has the same shape as expected by normalize
     white_image_tensor = white_image_tensor.permute(0, 2, 3, 1)  # Change the channel order
-
+    black_image_tensor = black_image_tensor.permute(0, 2, 3, 1)
+    gaussian_image_tensor = gaussian_image_tensor.permute(0, 2, 3, 1)
     # Move the input tensor to the same device as the model (GPU)
     white_image_tensor = white_image_tensor.to(args.device)
 
-    # Debugging: print tensor shapes
-    print("white_image_tensor shape:", white_image_tensor.shape)
-    print("mean shape:", torch.tensor(mean).shape)
-    print("std shape:", torch.tensor(std).shape)
+    # Save white black and gaussian image as png
+    white_image.save('Results/white_image.png')
+    black_image.save('Results/black_image.png')
+    noise_image.save('Results/gaussian_image.png')
 
     # Manually apply normalization
-    white_image_tensor = (white_image_tensor - torch.tensor(mean).to(args.device)) / torch.tensor(std).to(args.devic
+    white_image_tensor = (white_image_tensor - torch.tensor(mean).to(args.device)) / torch.tensor(std).to(args.device)
+    black_image_tensor = (black_image_tensor - torch.tensor(mean).to(args.device)) / torch.tensor(std).to(args.device)
+    gaussian_image_tensor = (gaussian_image_tensor - torch.tensor(mean).to(args.device)) / torch.tensor(std).to(args.device)
     # Debugging: print normalized tensor shape
     print("normalized white_image_tensor shape:", white_image_tensor.shape)
 

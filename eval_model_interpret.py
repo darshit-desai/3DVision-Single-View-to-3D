@@ -350,19 +350,31 @@ def evaluate_model(args):
     # Debugging: print normalized tensor shape
     print("normalized white_image_tensor shape:", white_image_tensor.shape)
 
-    predictions = model(white_image_tensor, args)
+    predictions_white = model(white_image_tensor, args)
+    predictions_black = model(black_image_tensor, args)
+    predictions_gaussian = model(gaussian_image_tensor, args)
     if args.type == "vox":
-        predictions = torch.sigmoid(predictions)
+        predictions_white = torch.sigmoid(predictions_white)
+        predictions_black = torch.sigmoid(predictions_black)
+        predictions_white = torch.sigmoid(predictions_gaussian)
 
     if args.type == "vox":
-        predictions = predictions.permute(0, 1, 4, 3, 2)
+        predictions_white = predictions_white.permute(0, 1, 4, 3, 2)
+        predictions_black = predictions_black.permute(0, 1, 4, 3, 2)
+        predictions_gaussian = predictions_gaussian.permute(0, 1, 4, 3, 2)
     
     if args.type == "vox":
-        render_voxels(predictions, output_path=f'Results/Interpret_voxel.gif')
+        render_voxels(predictions_white, output_path=f'Results/Interpret_voxel_white.gif')
+        render_voxels(predictions_gaussian, output_path=f'Results/Interpret_voxel_gaussian.gif')
+        render_voxels(predictions_black, output_path=f'Results/Interpret_voxel_black.gif')
     elif args.type == "point":
-        render_points(predictions, output_path=f'Results/Interpret_pcl.gif', type_data="pred")
+        render_points(predictions_white, output_path=f'Results/Interpret_pcl_white.gif', type_data="pred")
+        render_points(predictions_black, output_path=f'Results/Interpret_pcl_black.gif', type_data="pred")
+        render_points(predictions_gaussian, output_path=f'Results/Interpret_pcl_gaussian.gif', type_data="pred")
     elif args.type == "mesh":
-        render_mesh(predictions, args, output_file=f'Results/Interpret_mesh.gif')
+        render_mesh(predictions_white, args, output_file=f'Results/Interpret_mesh_white.gif')
+        render_mesh(predictions_black, args, output_file=f'Results/Interpret_mesh_black.gif')
+        render_mesh(predictions_gaussian, args, output_file=f'Results/Interpret_mesh_gaussian.gif')
     
     # plt.imsave(f'Results/{start_iter1}_{args.type}.png', white_image_tensor.squeeze().detach().cpu().numpy())
 

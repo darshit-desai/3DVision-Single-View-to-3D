@@ -156,7 +156,7 @@ def render_voxels(optimized_voxel, output_path):
     color2 = [0.0, 1.0, 0.0]  # Green for highest probability
 
     # Map voxel probabilities to colors
-    probabilities = (binarray - min_prob) / (max_prob - min_prob)
+    probabilities = (voxels_src - min_prob) / (max_prob - min_prob)
     new_colors = probabilities[:, :, :, None] * torch.tensor(color2) + (1 - probabilities[:, :, :, None]) * torch.tensor(color1)
     new_colors = new_colors.permute(2, 1, 0)  # Reshape colors
 

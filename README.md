@@ -131,13 +131,18 @@ For point clouds with n_points 5000, 10000 or 25000, Mention n_points below
 python eval_model.py --vis_freq 100 --load_checkpoint --type 'point' --n_points $n_points
 ```
 
-For mesh and vox the command remains the same
+For mesh the command remains the same
 ```BASH
-python eval_model.py --vis_freq 100 --load_checkpoint --type 'mesh|point'
+python eval_model.py --vis_freq 100 --load_checkpoint --type 'mesh' 
+```
+
+For voxel the command is changed a bit
+```BASH
+python eval_model.py --vis_freq 100 --load_checkpoint --type 'vox' #--model_type 'baseline|mlp|conv' if using vox in --type
 ```
 
 ## Interpretation
 The run command for the gaussian, white and black image outputs are mentioned below:
 ```BASH
-python eval_model_interpret.py --type 'vox|point|mesh'
+python eval_model_interpret.py --type 'vox|point|mesh' #--model_type 'baseline|mlp|conv' if using vox in --type
 ```

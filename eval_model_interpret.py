@@ -335,6 +335,8 @@ def evaluate_model(args):
     gaussian_image_tensor = gaussian_image_tensor.permute(0, 2, 3, 1)
     # Move the input tensor to the same device as the model (GPU)
     white_image_tensor = white_image_tensor.to(args.device)
+    black_image_tensor = black_image_tensor.to(args.device)
+    gaussian_image_tensor = gaussian_image_tensor.to(args.device)
 
     # Save white black and gaussian image as png
     white_image.save('Results/white_image.png')

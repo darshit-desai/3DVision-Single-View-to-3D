@@ -157,6 +157,7 @@ def render_voxels(optimized_voxel, output_path):
 
     # Map voxel probabilities to colors
     probabilities = (voxels_src - min_prob) / (max_prob - min_prob)
+    print("Probabilitis shape", probabilities.shape)
     new_colors = probabilities[:, :, :, None] * torch.tensor(color2) + (1 - probabilities[:, :, :, None]) * torch.tensor(color1)
     new_colors = new_colors.permute(2, 1, 0)  # Reshape colors
 

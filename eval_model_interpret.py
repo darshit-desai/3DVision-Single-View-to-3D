@@ -356,7 +356,7 @@ def evaluate_model(args):
     if args.type == "vox":
         predictions_white = torch.sigmoid(predictions_white)
         predictions_black = torch.sigmoid(predictions_black)
-        predictions_white = torch.sigmoid(predictions_gaussian)
+        predictions_gaussian = torch.sigmoid(predictions_gaussian)
 
     if args.type == "vox":
         predictions_white = predictions_white.permute(0, 1, 4, 3, 2)

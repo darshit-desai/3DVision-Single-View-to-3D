@@ -148,36 +148,39 @@ class SingleViewto3D(nn.Module):
             # TODO:
             
             # Model 1
-            # self.decoder =  ImplicitMLPDecoder()  
+            if (args.model_type=="mlp"):
+                self.decoder =  ImplicitMLPDecoder()  
             
             
             # Model 2 
-            self.decoder = nn.Sequential(
-                nn.Linear(512, 1024), 
-                nn.ReLU(),
-                nn.Linear(1024, 2048),
-                nn.ReLU(), 
-                nn.Linear(2048, 32*32*32)) 
+            if (args.model_type=="baseline"):
+                self.decoder = nn.Sequential(
+                    nn.Linear(512, 1024), 
+                    nn.ReLU(),
+                    nn.Linear(1024, 2048),
+                    nn.ReLU(), 
+                    nn.Linear(2048, 32*32*32)) 
             
 
             # Model 3 Upconvolutions
-            # self.decoder = nn.Sequential(
-            # nn.Linear(512, 1024),
-            # nn.Unflatten(1, (128, 2, 2, 2)),
-            # torch.nn.ConvTranspose3d(128, 256, kernel_size=3, stride=1),
-            # torch.nn.ReLU(), # shape [16, 256, 4, 4, 4]
+            if (args.model_type=="conv"):
+                self.decoder = nn.Sequential(
+                nn.Linear(512, 1024),
+                nn.Unflatten(1, (128, 2, 2, 2)),
+                torch.nn.ConvTranspose3d(128, 256, kernel_size=3, stride=1),
+                torch.nn.ReLU(), # shape [16, 256, 4, 4, 4]
 
-            # torch.nn.ConvTranspose3d(256, 384, kernel_size=3, stride=3, padding=1),
-            # torch.nn.ReLU(), # shape  [16, 384, 10, 10, 10]
+                torch.nn.ConvTranspose3d(256, 384, kernel_size=3, stride=3, padding=1),
+                torch.nn.ReLU(), # shape  [16, 384, 10, 10, 10]
 
-            # torch.nn.ConvTranspose3d(384, 256, kernel_size=3, stride=3, padding=1),
-            # torch.nn.ReLU(), # [16, 256, 28, 28, 28]
+                torch.nn.ConvTranspose3d(384, 256, kernel_size=3, stride=3, padding=1),
+                torch.nn.ReLU(), # [16, 256, 28, 28, 28]
 
-            # torch.nn.ConvTranspose3d(256, 96, kernel_size=5, stride=1),
-            # torch.nn.ReLU(), # shape [16, 96, 32, 32, 32]
+                torch.nn.ConvTranspose3d(256, 96, kernel_size=5, stride=1),
+                torch.nn.ReLU(), # shape [16, 96, 32, 32, 32]
 
-            # torch.nn.Conv3d(96, 1, kernel_size=1, stride=1), # shape [16, 1, 32, 32, 32]
-            # )         
+                torch.nn.Conv3d(96, 1, kernel_size=1, stride=1), # shape [16, 1, 32, 32, 32]
+                )         
         elif args.type == "point":
             # Input: b x 512
             # Output: b x args.n_points x 3  

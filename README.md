@@ -9,86 +9,35 @@ https://umd.box.com/s/v2c6pdm1nzrvgtszi2veyy2dmja4u5mt
 
 This readme is for replicating the results primarily shown in Problem 1.1-1.3 abd Problem 2.1-2.3, Rest of the problems the models are already generated and can be accessed based on below instructions. The model.py, train_model.py have been configured to train the baseline models shown in Problem 2.1-2.3, for training the models for hyperparameters uncomment the bash commands as shown in the following bash file representation and also uncomment the appropriate model in the model.py file for voxels:
 
-```BASH
-#!/bin/bash
+### For training problem 2 models
 
-###Comment this out if you don't want to use the linear model, but I prefer this since this gives the best results
-# Baseline Model (Linear Layers only)  Avg F1@0.05: 81.916
-python train_model.py --type 'vox' --max_iter 2000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-4
-wait
-python train_model.py --type 'vox' --max_iter 4000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-5 --load_checkpoint
-wait
-python train_model.py --type 'vox' --max_iter 6000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-wait
-python train_model.py --type 'vox' --max_iter 8000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-wait
-python train_model.py --type 'vox' --max_iter 10002  --num_workers 4 --save_freq 200 --batch_size 30 --lr 5e-7 --load_checkpoint
-wait
+#### For Problem 2.1
 
-###Uncomment the below block of 5 commands
-# Baseline Model (Conv layers Pix2Vox Model)  Avg F1@0.05: 82.663
-# python train_model.py --type 'vox' --max_iter 2000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-4
-# wait
-# python train_model.py --type 'vox' --max_iter 4000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-5 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 6000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 8000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 10002  --num_workers 4 --save_freq 200 --batch_size 30 --lr 5e-7 --load_checkpoint
-# wait
+    #"Usage: $0 [train_baseline|train_conv|train_implicitMLP]"
+    ./problem2_vox.sh train_baseline
 
-# Baseline Model (ImplicitMLPDecoder)  Avg F1@0.05: 0.0 
-# python train_model.py --type 'vox' --max_iter 2000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-4
-# wait
-# python train_model.py --type 'vox' --max_iter 4000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 4e-5 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 6000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 8000  --num_workers 4 --save_freq 200 --batch_size 16 --lr 1e-6 --load_checkpoint
-# wait
-# python train_model.py --type 'vox' --max_iter 10002  --num_workers 4 --save_freq 200 --batch_size 24 --lr 5e-7 --load_checkpoint
-# wait
-```
-Note for voxel evaluation this is mandatorily required to be done, uncomment and comment the model you are using accordingly
-```python
-# Model 1
-# self.decoder =  ImplicitMLPDecoder()
-  
-# Model 2 
-self.decoder = nn.Sequential(
-    nn.Linear(512, 1024), 
-    nn.ReLU(),
-    nn.Linear(1024, 2048),
-    nn.ReLU(), 
-    nn.Linear(2048, 32*32*32)) 
+#### For Problem 2.2
 
-# Model 3 Upconvolutions
-# self.decoder = nn.Sequential(
-# nn.Linear(512, 1024),
-# nn.Unflatten(1, (128, 2, 2, 2)),
-# torch.nn.ConvTranspose3d(128, 256, kernel_size=3, stride=1),
-# torch.nn.ReLU(), # shape [16, 256, 4, 4, 4]
+    #"Usage: $0 [train_baseline|train_n_points_10000|train_n_points_25000]"
+    ./problem2_point.sh train_baseline
 
-# torch.nn.ConvTranspose3d(256, 384, kernel_size=3, stride=3, padding=1),
-# torch.nn.ReLU(), # shape  [16, 384, 10, 10, 10]
 
-# torch.nn.ConvTranspose3d(384, 256, kernel_size=3, stride=3, padding=1),
-# torch.nn.ReLU(), # [16, 256, 28, 28, 28]
+#### For Problem 2.2
 
-# torch.nn.ConvTranspose3d(256, 96, kernel_size=5, stride=1),
-# torch.nn.ReLU(), # shape [16, 96, 32, 32, 32]
+"Usage: $0 [train_baseline|train_smooth_5]"
+./problem2_mesh.sh train_baseline
 
-# torch.nn.Conv3d(96, 1, kernel_size=1, stride=1), # shape [16, 1, 32, 32, 32]
-# )      
-```
 
-For point cloud and meshes this type of operation is not required.
+#### For Problem 2.3
 
-## How can you locate the results?
+    #"Usage: $0 [train_baseline|train_smooth_5]"
+    ./problem2_mesh.sh train_baseline
+
+
+## How can you locate the models along with the results?
 
 ### For Problem 1
-Go to the root of the directory and cd into `Results_problem1/` directory
+Go to the root of the directory of the box link and cd into `Results_problem1/` directory
 
 ### For Problem 2.1-2.5
 ```tree
@@ -171,29 +120,6 @@ python fit_data.py --type 'mesh' --max_iter 100000
 ```BASH
 python fit_data.py --type 'point' --max_iter 100000
 ```
-
-
-
-## Training for Q2:
-
-### For Voxels:
-
-```BASH
-./problem2_voxel.sh
-```
-
-### For Point Clouds:
-
-```BASH
-./problem2_point.sh
-```
-
-### For Mesh:
-
-```BASH
-./problem2_mesh.sh
-```
-
 ## Evaluation
 
 ### For Voxels, Point Clouds and Meshes:

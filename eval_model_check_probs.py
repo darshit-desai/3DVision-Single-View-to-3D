@@ -152,8 +152,8 @@ def render_voxels(optimized_voxel, output_path):
     # Define the color mapping based on voxel probabilities
     min_prob = 0.0
     max_prob = 1.0
-    color1 = [1.0, 0.0, 0.0]  # Red for lowest probability
-    color2 = [0.0, 1.0, 0.0]  # Green for highest probability
+    color1 = torch.tensor([1.0, 0.0, 0.0])  # Red for lowest probability
+    color2 = torch.tensor([0.0, 1.0, 0.0])  # Green for highest probability
 
     # Map voxel probabilities to colors
     probabilities = (voxels_src - min_prob) / (max_prob - min_prob)

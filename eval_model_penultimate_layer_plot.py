@@ -357,7 +357,7 @@ def evaluate_model(args):
         #         render_mesh(predictions, args, output_file=f'Results/Q2_3_{num_imgs}_{args.type}.gif')
         #         render_mesh(mesh_gt, args, output_file=f'Results/Q2_3_{num_imgs}_gt_{args.type}.gif')    
             plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
-            plot_pred((predictions[-1][0].cpu().detach().numpy(), output_path=f'images/q2-6-pred-{num_imgs}.png'))
+            plot_pred(predictions[-1].cpu().detach().numpy(), output_path=f'images/q2-6-pred-{num_imgs}.png')
         # if(step == max_iter-1 ):
         #     plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
         #     if args.type == "vox":

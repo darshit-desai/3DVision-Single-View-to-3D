@@ -137,7 +137,7 @@ def render_voxels(optimized_voxel, output_path):
     min_value = -1.1
     #make vertices and faces for symmetric 360 degree rotation
     print(voxels_src.shape)
-    is_green = optimized_voxel > 0.8
+    # is_green = optimized_voxel > 0.8
     # Create a color tensor with the same shape as is_green
     colors = torch.zeros_like(voxels_src)
     # Set colors to green where probability > 0.8

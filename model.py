@@ -202,8 +202,6 @@ class SingleViewto3D(nn.Module):
                 nn.ReLU(),
                 nn.Linear(in_features=2048, out_features=4096),
                 nn.ReLU(),
-                # nn.Linear(in_features=4096, out_features=4096),
-                # nn.GELU(),
                 nn.Linear(in_features=4096, out_features=3*self.n_point),
                 nn.Tanh()
                 )

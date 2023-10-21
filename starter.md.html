@@ -243,7 +243,7 @@ On your webpage, you should include visuals of any three examples in the test se
 
 For this I tried training three different models:
 * Implicit MLP Decoder which was provided with the source code
-* A 3D up convolution decoder model, where I flatten the latent code given by the linear layer of the encoder and then upsampled the output using `Conv3D` upt 32x32x32
+* A 3D up convolution decoder model, where I flatten the latent code given by the linear layer of the encoder and then upsampled the output using `Conv3D` upto 32x32x32
 * A simple linear fully connected network, where I reshape the last layer to 32x32x32
 
 An important point to note is that during training none of the models had any activations in the output layer, hence in the evaluation a sigmoid was added to clamp the output probability between 0.0 and 1.0
@@ -260,25 +260,269 @@ self.decoder = nn.Sequential(
 ```
 
 The results of the three examples for the linear network evaluation are shown below:
+* Example 1:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\0_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_0_gt_vox.gif" alt="Ground truth Voxel Representation" />
+        <figcaption>Ground truth Voxel Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_0_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_0_vox.gif" alt="Voxel Prediction Render Representation" />
+        <figcaption>Voxel Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
 
+* Example 2:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\300_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_3_gt_vox.gif" alt="Ground truth Voxel Representation" />
+        <figcaption>Ground truth Voxel Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_3_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_3_vox.gif" alt="Voxel Prediction Render Representation" />
+        <figcaption>Voxel Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
 
+* Example 3:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\400_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_4_gt_vox.gif" alt="Ground truth Voxel Representation" />
+        <figcaption>Ground truth Voxel Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_4_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\results\Q2_1_4_vox.gif" alt="Voxel Prediction Render Representation" />
+        <figcaption>Voxel Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
 
-Constructing a Cube (5 points)
+Image to point cloud (20 points)
 -------------------------------------------------------------------------------
 
-Construct a cube mesh and then render it from multiple viewpoints. Remember that we are
-still working with triangle meshes, so you will need to use two sets of triangle faces
-to represent one face of the cube.
+In this subsection, we will define a neural network to decode point clouds.
+Similar as above, define the decoder network [here](https://github.com/848f-3DVision/assignment2/blob/main/model.py#L155) in `model.py` file, then reference your decoder [here](https://github.com/848f-3DVision/assignment2/blob/main/model.py#L215) in `model.py` file
 
-**On your webpage, show a 360-degree gif animation of your cube.
-Also, list how many vertices and (triangle) faces your mesh should have.**
+Run the file `python train_model.py --type 'point'`, to train single view to pointcloud pipeline, feel free to tune the hyperparameters as per your need.
 
-**Answer:** The cube has **8 vertices** and **12 faces**.
+After trained, visualize the input RGB, ground truth point cloud and predicted  point cloud in `eval_model.py` file using:
+`python eval_model.py --type 'point' --load_checkpoint`
 
-<figure style="text-align: center;">
-    <img src="assets/cube_360.gif" alt="Cube" />
-    <figcaption>Cube mesh render and 360 degree gif</figcaption>
-</figure>
+You need to add the respective visualization code in `eval_model.py`.
+
+On your webpage, you should include visuals of any three examples in the test set. For each example show the input RGB, render of the predicted 3D point cloud and a render of the ground truth mesh.
+
+**Answer-**
+
+For this representation I followed the model architecture given in the comments of the starter code, I tried modifying the same architecture iteratively by adding and removing layers and increasing the output layer size upto 4096 neurons. I also experimented with the number of points the visualization although gets denser. More of it is dicussed in the hyperparameters tuning section.
+
+The architecture is given as below:
+```python
+self.decoder = torch.nn.Sequential(
+                nn.Linear(in_features=512, out_features=1024),
+                nn.ReLU(),
+                nn.Linear(in_features=1024, out_features=2048),
+                nn.ReLU(),
+                nn.Linear(in_features=2048, out_features=4096),
+                nn.ReLU(),
+                nn.Linear(in_features=4096, out_features=3*self.n_point),
+                nn.Tanh()
+                )
+```
+
+The results of the three examples for the linear network evaluation are shown below:
+* Example 1:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\0_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_0_gt_point.gif" alt="Ground truth Point Cloud Representation" />
+        <figcaption>Ground truth Point Cloud Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_0_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_0_point.gif" alt="Point Cloud Prediction Render Representation" />
+        <figcaption>Point Cloud Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+* Example 2:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\300_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_3_gt_point.gif" alt="Ground truth Point Cloud Representation" />
+        <figcaption>Ground truth Point Cloud Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_3_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_3_point.gif" alt="Point Cloud Prediction Render Representation" />
+        <figcaption>Point Cloud Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+* Example 3:
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\200_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_2_gt_point.gif" alt="Ground truth Point Cloud Representation" />
+        <figcaption>Ground truth Point Cloud Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_2_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 50%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\Results\Q2_2_2_point.gif" alt="Point Cloud Prediction Render Representation" />
+        <figcaption>Point Cloud Prediction Render Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+Image to mesh (20 points)
+-------------------------------------------------------------------------------
+In this subsection, we will define a neural network to decode mesh.
+Similar as above, define the decoder network [here](https://github.com/848f-3DVision/assignment2/blob/main/model.py#L177) in `model.py` file, then reference your decoder [here](https://github.com/848f-3DVision/assignment2/blob/main/model.py#L220) in `model.py` file
+
+Run the file `python train_model.py --type 'mesh'`, to train single view to mesh pipeline, feel free to tune the hyperparameters as per your need. We also encourage the student to try different mesh initializations [here](https://github.com/848f-3DVision/assignment2/blob/main/model.py#L174)
+
+
+After trained, visualize the input RGB, ground truth mesh and predicted mesh in `eval_model.py` file using:
+`python eval_model.py --type 'mesh' --load_checkpoint`
+
+You need to add the respective visualization code in `eval_model.py`.
+
+On your webpage, you should include visuals of any three examples in the test set. For each example show the input RGB, render of the predicted mesh and a render of the ground truth mesh.
+
+**Answer-**
+For this representation I followed the model architecture given in the comments of the starter code, I tried modifying the same architecture iteratively by adding and removing layers.
+
+The architecture is given as below:
+```python
+self.decoder = torch.nn.Sequential(
+                nn.Linear(in_features=512, out_features=512),
+                nn.ReLU(),
+                nn.Linear(in_features=512, out_features=1024),
+                nn.ReLU(),
+                nn.Linear(in_features=1024, out_features=1024),
+                nn.ReLU(),  
+                nn.Linear(in_features=1024, out_features=2048),
+                nn.ReLU(),
+                nn.Linear(in_features=2048, out_features=3*mesh_pred.verts_packed().shape[0]),
+                nn.Tanh()
+              )    
+```
+The results of the three examples for the linear network evaluation are shown below:
+
+
+
 
 Re-texturing a mesh (15 points)
 ===============================================================================

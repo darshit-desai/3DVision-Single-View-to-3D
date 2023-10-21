@@ -6,6 +6,45 @@
 Go to the root of the directory and cd into `Results_problem1/` directory
 
 ### For Problem 2.1-2.5
+```tree
+.
+├── Mesh Models
+│   ├── Modelwithwsmooth0.5
+│   │   ├── eval_mesh.png
+│   │   ├── Notimportant
+│   │   ├── problem2_mesh.sh
+│   │   └── Resultswsmooth0.5
+│   └── Model_withwsmooth5
+│       ├── eval_mesh.png
+│       ├── problem2_mesh.sh
+│       └── Results
+├── PointModels
+│   ├── Model2_npoints10000
+│   │   ├── eval_point.png
+│   │   ├── problem2_point.sh
+│   │   └── Results
+│   ├── Model2_pointsbaseline
+│   │   ├── eval_point.png
+│   │   ├── problem2_point.sh
+│   │   └── Results
+│   └── Model3_npoints25000
+│       ├── eval_point.png
+│       ├── problem2_point.sh
+│       └── Results
+└── voxmodels
+    ├── voxmodel_ConvLayers
+    │   ├── eval_vox.png
+    │   ├── problem2_voxel.sh
+    │   └── Results
+    ├── voxmodel_implicitMLPDecoder
+    │   ├── eval_vox.png
+    │   ├── problem2_voxel.sh
+    │   └── Results
+    └── voxmodel_LinearLayers
+        ├── eval_vox.png
+        ├── problem2_voxel.sh
+        └── results
+```
 
 The result directory is bifurcated model wise:
 * The Point cloud model has three result folders:

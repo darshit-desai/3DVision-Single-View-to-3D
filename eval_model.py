@@ -75,7 +75,6 @@ def compute_sampling_metrics(pred_points, gt_points, thresholds, eps=1e-8):
     # Compute L1 and L2 dists between each GT point and its nearest pred point
     gt_to_pred_dists2 = knn_gt.dists[..., 0]  # (N, S)
     gt_to_pred_dists = gt_to_pred_dists2.sqrt()  # (N, S)
-    # print(gt_to_pred_dists)
     # Compute precision, recall, and F1 based on L2 distances
     for t in thresholds:
         precision = 100.0 * (pred_to_gt_dists < t).float().mean(dim=1)
@@ -187,17 +186,9 @@ def render_points(optimized_points, output_path, type_data):
     )
     verts = optimized_points
     rgb = (verts - verts.min()) / (verts.max() - verts.min())
-    # color1 = [1.0, 0.0, 0.0]
-    # color2 = [0.0, 0.0, 1.0]
-    # print(rgb.shape)
     device = torch.device("cuda:0")
-    # rgb = rgb.to(device)
-    # color=torch.tensor([1.0, 0.0, 0.0])
-    # rgb = torch.ones_like(verts) * color.to(device)
     color1 = torch.tensor([1.0, 0.0, 0.0])
     color2 = torch.tensor([0.0,0.0, 1.0])
-    # print("Color 1 value: ", color1)
-    # print("Color 2 value: ", color2)
     color1 = color1.to(device)
     color2 = color2.to(device)
     color = rgb[:, :, None] * color2 + (1 - rgb[:, :, None]) * color1
@@ -207,8 +198,6 @@ def render_points(optimized_points, output_path, type_data):
         # verts = verts.unsqueeze(0)
         print("Points shape: ", verts.shape)
         print("RGB shape: ", color.shape)
-        # rgb = rgb.unsqueeze(0)
-    # print("Color shape: ", color.shape)
     point_cloud = pytorch3d.structures.Pointclouds(points=verts, features=color)
     num_frames = 36
     render_full = []

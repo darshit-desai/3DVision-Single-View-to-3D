@@ -146,8 +146,11 @@ class SingleViewto3D(nn.Module):
             # Input: b x 512
             # Output: b x 32 x 32 x 32
             # TODO:
+            
             # Model 1
             # self.decoder =  ImplicitMLPDecoder()  
+            
+            
             # Model 2 
             self.decoder = nn.Sequential(
                 nn.Linear(512, 1024), 
@@ -155,7 +158,9 @@ class SingleViewto3D(nn.Module):
                 nn.Linear(1024, 2048),
                 nn.ReLU(), 
                 nn.Linear(2048, 32*32*32)) 
-            # Model 3 Pix2Vox
+            
+
+            # Model 3 Upconvolutions
             # self.decoder = nn.Sequential(
             # nn.Linear(512, 1024),
             # nn.Unflatten(1, (128, 2, 2, 2)),

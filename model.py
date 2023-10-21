@@ -149,11 +149,13 @@ class SingleViewto3D(nn.Module):
             
             # Model 1
             if (args.model_type=="mlp"):
+                print("Training Implicit MLP Decoder Model,#######################")
                 self.decoder =  ImplicitMLPDecoder()  
             
             
             # Model 2 
             if (args.model_type=="baseline"):
+                print("Training Linear Network Baseline Model,#######################")
                 self.decoder = nn.Sequential(
                     nn.Linear(512, 1024), 
                     nn.ReLU(),
@@ -164,6 +166,7 @@ class SingleViewto3D(nn.Module):
 
             # Model 3 Upconvolutions
             if (args.model_type=="conv"):
+                print("Training Conv Network Baseline Model,#######################")
                 self.decoder = nn.Sequential(
                 nn.Linear(512, 1024),
                 nn.Unflatten(1, (128, 2, 2, 2)),

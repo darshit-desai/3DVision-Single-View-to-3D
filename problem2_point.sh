@@ -4,6 +4,7 @@ command="$1"  # The command to run
 
 if [ "$command" = "train_baseline" ]; then
     # Baseline Model Configuration
+    echo "Training Baseline Model Configuration"
     python train_model.py --type 'point' --max_iter 2000 --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-4
     wait
     python train_model.py --type 'point' --max_iter 4000 --load_checkpoint --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-5
@@ -16,6 +17,7 @@ if [ "$command" = "train_baseline" ]; then
     wait
 elif [ "$command" = "train_n_points_10000" ]; then
     # N_points 10000 points Configuration
+    echo "Training N_points 10000 points Configuration"
     python train_model.py --type 'point' --max_iter 2000 --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-4 --n_points 10000
     wait
     python train_model.py --type 'point' --max_iter 4000 --load_checkpoint --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-5 --n_points 10000
@@ -28,6 +30,7 @@ elif [ "$command" = "train_n_points_10000" ]; then
     wait
 elif [ "$command" = "train_n_points_25000" ]; then
     # N_points 25000 points Configuration
+    echo "Training N_points 25000 points Configuration"
     python train_model.py --type 'point' --max_iter 2000 --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-4 --n_points 25000
     wait
     python train_model.py --type 'point' --max_iter 4000 --load_checkpoint --num_workers 4 --save_freq 500 --batch_size 16 --lr 4e-5 --n_points 25000

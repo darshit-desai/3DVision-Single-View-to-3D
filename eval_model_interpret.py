@@ -289,7 +289,7 @@ def evaluate_model(args):
     white_image = Image.new('RGB', (224, 224), (255, 255, 255))
     
     # Define transformations to preprocess the image
-    preprocess = transforms.Compose([
+    preprocess = torchvision.transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
     ])

@@ -502,9 +502,9 @@ You need to add the respective visualization code in `eval_model.py`.
 On your webpage, you should include visuals of any three examples in the test set. For each example show the input RGB, render of the predicted mesh and a render of the ground truth mesh.
 
 **Answer-**
-For this representation I followed the model architecture given in the comments of the starter code, I tried modifying the same architecture iteratively by adding and removing layers.
+For this representation I followed the model architecture given in the comments of the starter code, I tried modifying the same architecture iteratively by adding and removing layers. Note I also used a different w_smooth value for the mesh model, More of it in the hyperparameters tuning section.
 
-The architecture is given as below:
+The architecture is given as below, Note for this I used the w_smooth value as 0.5:
 ```python
 self.decoder = torch.nn.Sequential(
                 nn.Linear(in_features=512, out_features=512),
@@ -520,26 +520,125 @@ self.decoder = torch.nn.Sequential(
               )    
 ```
 The results of the three examples for the linear network evaluation are shown below:
+* Example 1:
+<table style="width: 150%; text-align: center;">
+  <tr>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\0_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_0_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_0_mesh.gif" alt="Predicted Mesh Representation" />
+        <figcaption>Predicted Mesh Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+* Example 2:
+<table style="width: 150%; text-align: center;">
+  <tr>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\300_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_3_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_3_mesh.gif" alt="Predicted Mesh Representation" />
+        <figcaption>Predicted Mesh Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+* Example 3:
+<table style="width: 150%; text-align: center;">
+  <tr>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="ImageInputs\200_mesh.png" alt="Input Image to the Linear Network" />
+        <figcaption>Input Image to the Linear Network</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_2_gt_mesh.gif" alt="Ground truth Mesh Representation" />
+        <figcaption>Ground truth Mesh Representation</figcaption>
+      </figure>
+    </td>
+    <td style="width: 33.33%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\Resultswsmooth0.5\Q2_3_2_mesh.gif" alt="Predicted Mesh Representation" />
+        <figcaption>Predicted Mesh Representation</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+Quantitative comparisions(10 points)
+-------------------------------------------------------------------------------
+Quantitatively compare the F1 score of 3D reconstruction for meshes vs pointcloud vs voxelgrids.
+**Provide an intutive explaination justifying the comparision.**
+
+For evaluating you can run:
+`python eval_model.py --type voxel|mesh|point --load_checkpoint`
+
+**Answer-**
+The F1 score plots for the three models are as follows:
+
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <td style="width: 100%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\voxmodels\voxmodel_LinearLayers\eval_vox.png" alt="F1 @ 0.05(VOX)" />
+        <figcaption>F1 @ 0.05(VOX) = 81.916%</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 100%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\PointModels\Model2_pointsbaseline\eval_point.png" alt="F1 @ 0.05(POINT)" />
+        <figcaption>F1 @ 0.05(POINT) = 96.126%</figcaption>
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 100%;">
+      <figure style="display: inline-block; width: 100%;">
+        <img src="Results_Problem2\Mesh Models\Modelwithwsmooth0.5\eval_mesh.png" alt="F1 @ 0.05(MESH)" />
+        <figcaption>F1 @ 0.05(MESH) = 92.034%</figcaption>
+      </figure>
+    </td>
+  </tr>
+</table>
+
+**Intuitive Explaination-**
+From the above plots Quantitatively it can be said that-
+
+* Voxels have the lowest average F1 score among all three representations, This is primarily because the voxel is rendered from 32x32x32 volume and hence the resolution is very low, This is also evident from the visualization of the voxels during fit_data script where the voxels removed block wise based on probability and the resolution is pretty much dependent on the volume chosen by the user
+* Point Clouds achieve near perfect scores because of the resolution as well as the primary property of the point clouds inherent property of not enforcing any connectivity between the points, Hence the point cloud can be easily fit to the ground truth mesh. This is because the point clouds not enforcing connectivity and being able to move freely in space.
+* Mesh had an intermediate F1 score, because of the use of an inital ico_sphere topology which simply cannot model holes or complicated topologies, Hence the mesh representation is not able to achieve the same F1 score as the point cloud representation. Also it is difficult to interpret connectivity from single view images as well as the requirement of predicting holes which leads to improper predicitons.
 
 
 
-
-Re-texturing a mesh (15 points)
-===============================================================================
-
-Now let's practice re-texturing a mesh. For this task, we will be retexturing the cow
-mesh such that the color smoothly changes from the front of the cow to the back of the
-cow.
-
-**In your submission, describe your choice of `color1` and `color2`, and include a gif of the
-rendered mesh.**
-
-**Answer:** I chose `color1` to be `Navy-blue (0,0,0.5)#000080` and `color2` to be `Yellow (1.0,1.0,0)#FFFF00`. The gif of the rendered mesh is shown below.
-
-<figure style="text-align: center;">
-    <img src="assets/retexture_360render.gif" alt="Cow Color" />
-    <figcaption>Re-textured cow 360-degree rendering gif</figcaption>
-</figure>
 
 Camera Transformations (15 points)
 ===============================================================================

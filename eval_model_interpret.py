@@ -40,61 +40,6 @@ def get_args_parser():
     parser.add_argument('--load_feat', action='store_true') 
     return parser
 
-def preprocess(feed_dict, args):
-    for k in ['images']:
-        feed_dict[k] = feed_dict[k].to(args.device)
-
-    images = feed_dict['images'].squeeze(1)
-    mesh = feed_dict['mesh']
-    if args.load_feat:
-        images = torch.stack(feed_dict['feats']).to(args.device)
-
-    return images, mesh
-
-def save_plot(thresholds, avg_f1_score, args):
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(thresholds, avg_f1_score, marker='o')
-    ax.set_xlabel('Threshold')
-    ax.set_ylabel('F1-score')
-    ax.set_title(f'Evaluation {args.type}')
-    plt.savefig(f'eval_{args.type}', bbox_inches='tight')
-
-
-def compute_sampling_metrics(pred_points, gt_points, thresholds, eps=1e-8):
-    metrics = {}
-    lengths_pred = torch.full(
-        (pred_points.shape[0],), pred_points.shape[1], dtype=torch.int64, device=pred_points.device
-    )
-    lengths_gt = torch.full(
-        (gt_points.shape[0],), gt_points.shape[1], dtype=torch.int64, device=gt_points.device
-    )
-
-    # For each predicted point, find its neareast-neighbor GT point
-    knn_pred = knn_points(pred_points, gt_points, lengths1=lengths_pred, lengths2=lengths_gt, K=1)
-    # Compute L1 and L2 distances between each pred point and its nearest GT
-    pred_to_gt_dists2 = knn_pred.dists[..., 0]  # (N, S)
-    pred_to_gt_dists = pred_to_gt_dists2.sqrt()  # (N, S)
-
-    # For each GT point, find its nearest-neighbor predicted point
-    knn_gt = knn_points(gt_points, pred_points, lengths1=lengths_gt, lengths2=lengths_pred, K=1)
-    # Compute L1 and L2 dists between each GT point and its nearest pred point
-    gt_to_pred_dists2 = knn_gt.dists[..., 0]  # (N, S)
-    gt_to_pred_dists = gt_to_pred_dists2.sqrt()  # (N, S)
-    # print(gt_to_pred_dists)
-    # Compute precision, recall, and F1 based on L2 distances
-    for t in thresholds:
-        precision = 100.0 * (pred_to_gt_dists < t).float().mean(dim=1)
-        recall = 100.0 * (gt_to_pred_dists < t).float().mean(dim=1)
-        f1 = (2.0 * precision * recall) / (precision + recall + eps)
-        metrics["Precision@%f" % t] = precision
-        metrics["Recall@%f" % t] = recall
-        metrics["F1@%f" % t] = f1
-
-    # Move all metrics to CPU
-    metrics = {k: v.cpu() for k, v in metrics.items()}
-    return metrics
-
 def evaluate(predictions, mesh_gt, thresholds, args):
     if args.type == "vox":
         voxels_src = predictions
@@ -144,9 +89,6 @@ def render_voxels(optimized_voxel, output_path):
     #make vertices and faces for symmetric 360 degree rotation
     print(voxels_src.shape)
     vertices, faces = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), 0.5)
-    # if vertices.numel() == 0:
-    #     print("No vertices found. Skipping rendering.")
-    #     return
     vertices = torch.tensor(vertices).float()
     faces = torch.tensor(faces.astype(int))
     color1 = [0.7, 0.0, 0.4]
@@ -196,17 +138,11 @@ def render_points(optimized_points, output_path, type_data):
     )
     verts = optimized_points
     rgb = (verts - verts.min()) / (verts.max() - verts.min())
-    # color1 = [1.0, 0.0, 0.0]
-    # color2 = [0.0, 0.0, 1.0]
-    # print(rgb.shape)
+
     device = torch.device("cuda:0")
-    # rgb = rgb.to(device)
-    # color=torch.tensor([1.0, 0.0, 0.0])
-    # rgb = torch.ones_like(verts) * color.to(device)
     color1 = torch.tensor([1.0, 0.0, 0.0])
     color2 = torch.tensor([0.0,0.0, 1.0])
-    # print("Color 1 value: ", color1)
-    # print("Color 2 value: ", color2)
+
     color1 = color1.to(device)
     color2 = color2.to(device)
     color = rgb[:, :, None] * color2 + (1 - rgb[:, :, None]) * color1
@@ -216,8 +152,7 @@ def render_points(optimized_points, output_path, type_data):
         # verts = verts.unsqueeze(0)
         print("Points shape: ", verts.shape)
         print("RGB shape: ", color.shape)
-        # rgb = rgb.unsqueeze(0)
-    # print("Color shape: ", color.shape)
+
     point_cloud = pytorch3d.structures.Pointclouds(points=verts, features=color)
     num_frames = 36
     render_full = []

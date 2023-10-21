@@ -143,7 +143,10 @@ def render_voxels(optimized_voxel, output_path):
     min_value = -1.1
     #make vertices and faces for symmetric 360 degree rotation
     print(voxels_src.shape)
-    vertices, faces = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), 0.3)
+    vertices, faces = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), 0.5)
+    # if vertices.numel() == 0:
+    #     print("No vertices found. Skipping rendering.")
+    #     return
     vertices = torch.tensor(vertices).float()
     faces = torch.tensor(faces.astype(int))
     color1 = [0.7, 0.0, 0.4]

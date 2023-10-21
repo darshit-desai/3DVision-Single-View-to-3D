@@ -16,6 +16,11 @@ from utils import get_mesh_renderer, get_points_renderer
 from PIL import Image
 import numpy as np
 from tqdm import tqdm
+import argparse
+import torch
+import torchvision.transforms as transforms
+from PIL import Image
+import matplotlib.pyplot as plt
 
 import imageio
 
@@ -276,8 +281,9 @@ def render_mesh(mesh_src, args, output_file):
     print('Done!')
     
 
+
 def evaluate_model(args):
-    model =  SingleViewto3D(args)
+    model = SingleViewto3D(args)
     model.to(args.device)
     model.eval()
     if args.load_checkpoint:
@@ -285,31 +291,57 @@ def evaluate_model(args):
         model.load_state_dict(checkpoint['model_state_dict'])
         start_iter1 = checkpoint['step']
         print(f"Succesfully loaded iter {start_iter1}")
-    
-    print("Starting evaluating !")
+
+    print("Starting evaluating!")
+
+    # Define the mean and standard deviation values specific to your dataset
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
+
+    # Create a white image
     white_image = Image.new('RGB', (224, 224), (255, 255, 255))
-    
+
     # Define transformations to preprocess the image
     preprocess = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
     ])
+    
     # Preprocess the white image
     white_image_tensor = preprocess(white_image)
     white_image_tensor = white_image_tensor.unsqueeze(0)  # Add batch dimension
+
+    # Ensure white_image_tensor has the same shape as expected by normalize
+    white_image_tensor = white_image_tensor.permute(0, 2, 3, 1)  # Change the channel order
+
+    # Move the input tensor to the same device as the model (GPU)
+    white_image_tensor = white_image_tensor.to(args.device)
+
+    # Debugging: print tensor shapes
+    print("white_image_tensor shape:", white_image_tensor.shape)
+    print("mean shape:", torch.tensor(mean).shape)
+    print("std shape:", torch.tensor(std).shape)
+
+    # Manually apply normalization
+    white_image_tensor = (white_image_tensor - torch.tensor(mean).to(args.device)) / torch.tensor(std).to(args.devic
+    # Debugging: print normalized tensor shape
+    print("normalized white_image_tensor shape:", white_image_tensor.shape)
+
     predictions = model(white_image_tensor, args)
     if args.type == "vox":
         predictions = torch.sigmoid(predictions)
 
     if args.type == "vox":
-        predictions = predictions.permute(0,1,4,3,2) 
+        predictions = predictions.permute(0, 1, 4, 3, 2)
+    
     if args.type == "vox":
         render_voxels(predictions, output_path=f'Results/Interpret_voxel.gif')
     elif args.type == "point":
         render_points(predictions, output_path=f'Results/Interpret_pcl.gif', type_data="pred")
     elif args.type == "mesh":
-        render_mesh(predictions, args, output_file=f'Results/Interpret_mesh.gif')  
-    plt.imsave(f'Results/{step}_{args.type}.png', white_image_tensor.squeeze().detach().cpu().numpy())
+        render_mesh(predictions, args, output_file=f'Results/Interpret_mesh.gif')
+    
+    # plt.imsave(f'Results/{start_iter1}_{args.type}.png', white_image_tensor.squeeze().detach().cpu().numpy())
 
     print('Done!')
 

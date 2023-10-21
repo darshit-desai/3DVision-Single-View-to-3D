@@ -1,5 +1,8 @@
 # 3DVision-Single-View-to-3D
 
+**Download the models from here**
+https://umd.box.com/s/765pcurvaja2tf5x0pjvqck2drkls6zj
+
 **Access the final report in the root/starter.md.html file or on darshit-desai.github.io/3DVision-Single-View-to-3D**
 
 **All the baseline models results are already in root folder to run evaluation skip the steps to check how to run eval_model.py**

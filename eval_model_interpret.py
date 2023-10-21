@@ -276,31 +276,6 @@ def render_mesh(mesh_src, args, output_file):
     
 
 def evaluate_model(args):
-    r2n2_dataset = R2N2("test", dataset_location.SHAPENET_PATH, dataset_location.R2N2_PATH, dataset_location.SPLITS_PATH, return_voxels=True, return_feats=args.load_feat)
-
-    loader = torch.utils.data.DataLoader(
-        r2n2_dataset,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
-        collate_fn=collate_batched_R2N2,
-        pin_memory=True,
-        drop_last=True)
-    eval_loader = iter(loader)
-
-    model =  SingleViewto3D(args)
-    model.to(args.device)
-    model.eval()
-
-    start_iter = 0
-    start_time = time.time()
-
-    thresholds = [0.01, 0.02, 0.03, 0.04, 0.05]
-
-    avg_f1_score_05 = []
-    avg_f1_score = []
-    avg_p_score = []
-    avg_r_score = []
-
     if args.load_checkpoint:
         checkpoint = torch.load(f'checkpoint_{args.type}.pth')
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -308,75 +283,30 @@ def evaluate_model(args):
         print(f"Succesfully loaded iter {start_iter1}")
     
     print("Starting evaluating !")
-    max_iter = len(eval_loader)
-    for step in range(start_iter, max_iter):
-        iter_start_time = time.time()
+    white_image = Image.new('RGB', (224, 224), (255, 255, 255))
 
-        read_start_time = time.time()
+    # Define transformations to preprocess the image
+    preprocess = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+    ])
+    # Preprocess the white image
+    white_image_tensor = preprocess(white_image)
+    white_image_tensor = white_image_tensor.unsqueeze(0)  # Add batch dimension
+    predictions = model(white_image_tensor, args)
+    if args.type == "vox":
+        predictions = torch.sigmoid(predictions)
 
-        feed_dict = next(eval_loader)
+    if args.type == "vox":
+        predictions = predictions.permute(0,1,4,3,2) 
+    if args.type == "vox":
+        render_voxels(predictions, output_path=f'Results/Interpret_voxel.gif')
+    elif args.type == "point":
+        render_points(predictions, output_path=f'Results/Interpret_pcl.gif', type_data="pred")
+    elif args.type == "mesh":
+        render_mesh(predictions, args, output_file=f'Results/Interpret_mesh.gif')  
+    plt.imsave(f'Results/{step}_{args.type}.png', white_image_tensor.squeeze().detach().cpu().numpy())
 
-        images_gt, mesh_gt = preprocess(feed_dict, args)
-
-        read_time = time.time() - read_start_time
-
-        predictions = model(images_gt, args)
-        if args.type == "vox":
-            predictions = torch.sigmoid(predictions)
-
-        if args.type == "vox":
-            predictions = predictions.permute(0,1,4,3,2)
-        print("Mesh_gt information:")
-        print("Number of vertices:", len(mesh_gt.verts_list()))
-        print("Number of faces:", len(mesh_gt.faces_list()))
-        metrics = evaluate(predictions, mesh_gt, thresholds, args)
-
-        # TODO:
-        if (step % args.vis_freq) == 0:
-            img_step = step % args.vis_freq
-            num_imgs = step // args.vis_freq
-            if args.type == "vox":
-                
-                render_voxels(predictions, output_path=f'Results/Q2_1_{num_imgs}_{args.type}.gif')
-                voxel_ground_truth = feed_dict['voxels'].to(args.device)
-                render_voxels(voxel_ground_truth, output_path=f'Results/Q2_1_{num_imgs}_gt_{args.type}.gif')
-            elif args.type == "point":
-                render_points(predictions, output_path=f'Results/Q2_2_{num_imgs}_{args.type}.gif', type_data="pred")
-                gt_points = sample_points_from_meshes(mesh_gt, args.n_points).to(args.device)
-                render_points(gt_points, output_path=f'Results/Q2_2_{num_imgs}_gt_{args.type}.gif', type_data="gt")
-            elif args.type == "mesh":
-                render_mesh(predictions, args, output_file=f'Results/Q2_3_{num_imgs}_{args.type}.gif')
-                render_mesh(mesh_gt, args, output_file=f'Results/Q2_3_{num_imgs}_gt_{args.type}.gif')    
-            plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
-        if(step == max_iter-1 ):
-            plt.imsave(f'Results/{step}_{args.type}.png', images_gt.squeeze().detach().cpu().numpy())
-            if args.type == "vox":
-                render_voxels(predictions, output_path=f'Results/Q2_1_final_{args.type}.gif')
-                voxel_ground_truth = feed_dict['voxels'].to(args.device)
-                render_voxels(voxel_ground_truth[0], output_path=f'Results/Q2_1_final_gt_{args.type}.gif')
-            elif args.type == "point":
-                render_points(predictions, output_path=f'Results/Q2_2_final_{args.type}.gif', type_data="pred")
-                gt_points = sample_points_from_meshes(mesh_gt, args.n_points).to(args.device)
-                render_points(gt_points, output_path=f'Results/Q2_2_final_gt_{args.type}.gif', type_data="gt")        
-            elif args.type == "mesh":
-                render_mesh(predictions, args, output_file=f'Results/Q2_3_final_{args.type}.gif')
-                render_mesh(mesh_gt, args, output_file=f'Results/Q2_3_final_gt_{args.type}.gif')
-
-        total_time = time.time() - start_time
-        iter_time = time.time() - iter_start_time
-
-        f1_05 = metrics['F1@0.050000']
-        avg_f1_score_05.append(f1_05)
-        avg_p_score.append(torch.tensor([metrics["Precision@%f" % t] for t in thresholds]))
-        avg_r_score.append(torch.tensor([metrics["Recall@%f" % t] for t in thresholds]))
-        avg_f1_score.append(torch.tensor([metrics["F1@%f" % t] for t in thresholds]))
-
-        print("[%4d/%4d]; ttime: %.0f (%.2f, %.2f); F1@0.05: %.3f; Avg F1@0.05: %.3f" % (step, max_iter, total_time, read_time, iter_time, f1_05, torch.tensor(avg_f1_score_05).mean()))
-    
-
-    avg_f1_score = torch.stack(avg_f1_score).mean(0)
-
-    save_plot(thresholds, avg_f1_score,  args)
     print('Done!')
 
 if __name__ == '__main__':

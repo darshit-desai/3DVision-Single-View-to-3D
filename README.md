@@ -37,7 +37,7 @@ This readme is for replicating the results primarily shown in Problem 1.1-1.3 ab
 ## How can you locate the models along with the results?
 
 ### For Problem 1
-Go to the root of the directory of the box link and cd into `Results_problem1/` directory
+Go to the root of the directory of the ****box link**** and cd into `Results_problem1/` directory
 
 ### For Problem 2.1-2.5
 ```tree

@@ -284,7 +284,9 @@ def evaluate_model(args):
     
     print("Starting evaluating !")
     white_image = Image.new('RGB', (224, 224), (255, 255, 255))
-
+    model =  SingleViewto3D(args)
+    model.to(args.device)
+    model.eval()
     # Define transformations to preprocess the image
     preprocess = transforms.Compose([
         transforms.Resize((224, 224)),

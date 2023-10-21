@@ -1,7 +1,7 @@
 import argparse
 import time
 import torch
-import torchvision
+from torchvision import transforms
 from model import SingleViewto3D
 from r2n2_custom import R2N2
 from  pytorch3d.datasets.r2n2.utils import collate_batched_R2N2
@@ -290,7 +290,7 @@ def evaluate_model(args):
     white_image = Image.new('RGB', (224, 224), (255, 255, 255))
     
     # Define transformations to preprocess the image
-    preprocess = torchvision.transforms.Compose([
+    preprocess = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
     ])

@@ -1,6 +1,7 @@
 # 3DVision-Single-View-to-3D
 
 **Access the final report in the root/starter.md.html file or on darshit-desai.github.io/3DVision-Single-View-to-3D**
+
 **All the baseline models are already in root folder to run evaluation skip the steps to check how to run eval_model.py**
 This readme is for replicating the results primarily shown in Problem 1.1-1.3 abd Problem 2.1-2.3, Rest of the problems the models are already generated and can be accessed based on below instructions. The model.py, train_model.py have been configured to train the baseline models shown in Problem 2.1-2.3, for training the models for hyperparameters uncomment the bash commands as shown in the following bash file representation and also uncomment the appropriate model in the model.py file for voxels:
 

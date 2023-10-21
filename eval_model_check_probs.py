@@ -137,11 +137,9 @@ def render_voxels(optimized_voxel, output_path):
     min_value = -1.1
     #make vertices and faces for symmetric 360 degree rotation
     print(voxels_src.shape)
-    # is_green = optimized_voxel > 0.8
     # Create a color tensor with the same shape as is_green
     colors = torch.zeros_like(voxels_src)
-    # Set colors to green where probability > 0.8
-    colors[is_green] = torch.tensor([0, 1, 0])  # Set to green where probability > 0.8
+    
     vertices, faces = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), 0.3)
     vertices = torch.tensor(vertices).float()
     faces = torch.tensor(faces.astype(int))
@@ -149,9 +147,18 @@ def render_voxels(optimized_voxel, output_path):
     vertices = (vertices / voxel_size) * (max_value - min_value) + min_value
     vertices = vertices.unsqueeze(0)
     faces = faces.unsqueeze(0)
+    # Define the color mapping based on voxel probabilities
+    min_prob = 0.0
+    max_prob = 1.0
+    color1 = [1.0, 0.0, 0.0]  # Red for lowest probability
+    color2 = [0.0, 1.0, 0.0]  # Green for highest probability
 
-    # Create a TexturesVertex object with colors
-    textures = TexturesVertex(verts_features=colors)
+    # Map voxel probabilities to colors
+    probabilities = (binarray - min_prob) / (max_prob - min_prob)
+    new_colors = probabilities[:, :, :, None] * torch.tensor(color2) + (1 - probabilities[:, :, :, None]) * torch.tensor(color1)
+    new_colors = new_colors.permute(2, 1, 0)  # Reshape colors
+
+    textures = pytorch3d.renderer.TexturesVertex(new_colors)
     lights = pytorch3d.renderer.PointLights(location=[[0, 0.0, -3.0]], device=args.device)
     voxel_chair_mesh = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=textures).to(
         args.device

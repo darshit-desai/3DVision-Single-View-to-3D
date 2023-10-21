@@ -158,10 +158,14 @@ def render_voxels(optimized_voxel, output_path):
     # Map voxel probabilities to colors
     probabilities = voxels_src[0, 0]
     print("Probabilitis shape", probabilities.shape)
-    new_colors = probabilities[:, :, :, None] * torch.tensor(color2) + (1 - probabilities[:, :, :, None]) * torch.tensor(color1)
-    new_colors = new_colors.permute(2, 1, 0)  # Reshape colors
+    new_colors = probabilities[:, :, :, None] * torch.tensor(color2).to(args.device) + (1 - probabilities[:, :, :, None]) * torch.tensor(color1).to(args.device)
+    print("ewCOLORS",new_colors.shape)
+    # new_colors = new_colors.permute(2, 1, 0)  # Reshape colors
+    new_colors = new_colors.permute(0, 3, 1, 2).contiguous()
+    new_colors = new_colors.view(1, -1, 3)
 
-    textures = pytorch3d.renderer.TexturesVertex(new_colors)
+    # textures = pytorch3d.renderer.TexturesVertex(new_colors)
+    textures = pytorch3d.renderer.TexturesVertex(new_colors.view(1, -1, 3))
     lights = pytorch3d.renderer.PointLights(location=[[0, 0.0, -3.0]], device=args.device)
     voxel_chair_mesh = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=textures).to(
         args.device

@@ -137,9 +137,10 @@ def render_voxels(optimized_voxel, output_path):
     min_value = -1.1
     #make vertices and faces for symmetric 360 degree rotation
     print(voxels_src.shape)
-    is_green = voxel_probs > 0.8
-    # Create colors based on probabilities
-    colors = torch.ones_like(voxels_src)  # Initialize with red
+    is_green = optimized_voxel > 0.8
+    # Create a color tensor with the same shape as is_green
+    colors = torch.zeros_like(voxels_src)
+    # Set colors to green where probability > 0.8
     colors[is_green] = torch.tensor([0, 1, 0])  # Set to green where probability > 0.8
     vertices, faces = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), 0.3)
     vertices = torch.tensor(vertices).float()
@@ -176,6 +177,8 @@ def render_voxels(optimized_voxel, output_path):
         image = Image.fromarray((r * 255).astype(np.uint8))
         images.append(np.array(image))
     imageio.mimsave(output_path, images, duration=12.0, loop=0)
+
+
 
 def render_points(optimized_points, output_path, type_data):
     image_size= 512
